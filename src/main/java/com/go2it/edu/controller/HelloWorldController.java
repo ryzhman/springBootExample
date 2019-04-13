@@ -1,27 +1,30 @@
 package com.go2it.edu.controller;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.github.openjson.JSONObject;
 
 /**
  * @author Alex Ryzhkov
  */
-@RestController
+@Controller
 public class HelloWorldController {
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String getHelloWorldMessage() {
-		return "<div style=\"text-align:center;\">" + "<h1>Hello world</h1>"
-				+ "<p> This is my first web-page </p>"
-				+ "<img src=https://cdn-images-1.medium.com/fit/t/1600/672/0*n-2bW82Z6m6U2bij.jpeg></img>"
-				+ "</div>";
+		//Use template instead of hard-coded HTML
+		return "helloWorld";
+
+//		return "<div style=\"text-align:center;\">" + "<h1>Hello world</h1>"
+//				+ "<p> This is my first web-page </p>"
+//				+ "<img src=https://cdn-images-1.medium.com/fit/t/1600/672/0*n-2bW82Z6m6U2bij.jpeg></img>"
+//				+ "</div>";
 	}
 
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
