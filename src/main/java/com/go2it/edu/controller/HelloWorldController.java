@@ -1,30 +1,39 @@
 package com.go2it.edu.controller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.github.openjson.JSONObject;
 
 /**
  * @author Alex Ryzhkov
  */
-@Controller
+//this annotation will work only for MVC templates (no hardcoded HTML in response)
+//@Controller
+//this will work only for REST calls (no reference to templates)
+@RestController
+@RequestMapping(value = "/api")
 public class HelloWorldController {
 
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(value = "/welcome", method = RequestMethod.GET)
 	public String getHelloWorldMessage() {
 		//Use template instead of hard-coded HTML
-		return "helloWorld";
+		//		return "helloWorld";
 
-//		return "<div style=\"text-align:center;\">" + "<h1>Hello world</h1>"
-//				+ "<p> This is my first web-page </p>"
-//				+ "<img src=https://cdn-images-1.medium.com/fit/t/1600/672/0*n-2bW82Z6m6U2bij.jpeg></img>"
-//				+ "</div>";
+		return "<div style=\"text-align:center;\">" + "<h1>Hello world</h1>"
+				+ "<p> This is my first web-page </p>"
+				+ "<img src=https://cdn-images-1.medium.com/fit/t/1600/672/0*n-2bW82Z6m6U2bij.jpeg></img>"
+				+ "</div>";
+	}
+
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String login() {
+		return "login";
 	}
 
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
@@ -33,7 +42,7 @@ public class HelloWorldController {
 				+ "<p> This is my first web-page </p>" + "</div>";
 	}
 
-	@RequestMapping(value = "/{resource}", method = RequestMethod.GET)
+	@RequestMapping(value = "/resource/{resource}", method = RequestMethod.GET)
 	public String getHelloWorldMessageFromResource(@PathVariable String resource) {
 		return "<div style=\"text-align:center;\">" + "<h1>This request was done to the resource: " + resource
 				+ "</h1>" + "</div>";
