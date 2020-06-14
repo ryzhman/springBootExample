@@ -27,7 +27,7 @@ public class CustomerController {
         return new ResponseEntity(objectMapper.writeValueAsString(customers), HttpStatus.OK);
     }
 
-    @PostMapping
+    @PostMapping(consumes = "application/json")
     public ResponseEntity saveCustomer(@RequestBody String customerJson) throws IOException {
 
         if (customerJson == null || customerJson.isEmpty()) {
