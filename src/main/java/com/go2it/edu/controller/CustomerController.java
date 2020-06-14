@@ -7,9 +7,9 @@ import com.go2it.edu.utils.CustomerUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -25,5 +25,20 @@ public class CustomerController {
         }
         ObjectMapper objectMapper = new ObjectMapper();
         return new ResponseEntity(objectMapper.writeValueAsString(customers), HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity saveCustomer(@RequestBody String customerJson) throws IOException {
+
+        if (customerJson == null || customerJson.isEmpty()) {
+            return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
+        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        Customer customer = objectMapper.readValue(customerJson, Customer.class);
+        if (customer != null) {
+            System.out.println(customer);
+            return new ResponseEntity(HttpStatus.OK);
+        }
+        return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
