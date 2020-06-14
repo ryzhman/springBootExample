@@ -33,11 +33,11 @@ public class HelloWorldController {
 				+ "<p> This is my first web-page </p>" + "</div>";
 	}
 
-	@RequestMapping(value = "/{resource}", method = RequestMethod.GET)
-	public String getHelloWorldMessageFromResource(@PathVariable String resource) {
-		return "<div style=\"text-align:center;\">" + "<h1>This request was done to the resource: " + resource
-				+ "</h1>" + "</div>";
-	}
+//	@RequestMapping(value = "/{resource}", method = RequestMethod.GET)
+//	public String getHelloWorldMessageFromResource(@PathVariable String resource) {
+//		return "<div style=\"text-align:center;\">" + "<h1>This request was done to the resource: " + resource
+//				+ "</h1>" + "</div>";
+//	}
 
 	@RequestMapping(value = "/customizedWelcome", method = RequestMethod.POST)
 	public String getHelloWorldWithFromJSON(@RequestBody String message) {
