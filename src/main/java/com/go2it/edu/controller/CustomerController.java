@@ -28,13 +28,7 @@ public class CustomerController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity saveCustomer(@RequestBody String customerJson) throws IOException {
-
-        if (customerJson == null || customerJson.isEmpty()) {
-            return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
-        }
-        ObjectMapper objectMapper = new ObjectMapper();
-        Customer customer = objectMapper.readValue(customerJson, Customer.class);
+    public ResponseEntity saveCustomer(@RequestBody Customer customer) {
         if (customer != null) {
             System.out.println(customer);
             return new ResponseEntity(HttpStatus.OK);
