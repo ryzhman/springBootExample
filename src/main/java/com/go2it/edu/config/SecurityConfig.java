@@ -1,8 +1,12 @@
 package com.go2it.edu.config;
 
+import com.go2it.edu.service.SecurityUserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.security.SecureRandom;
+
 /**
  * @author Alex Ryzhkov
  */
@@ -18,48 +24,60 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	public SecurityConfig() {
-		super();
-		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-	}
+    private int strength;
+    private String secretSalt;
+    @Autowired
+    private SecurityUserService securityUserService;
 
-	@Override
-	protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication()
-				.withUser("admin")
-				.password(encoder().encode("adminPass"))
-				.roles("ADMIN")
-				.and()
-				.withUser("user")
-				.password(encoder().encode("userPass"))
-				.roles("USER");
-	}
+    public SecurityConfig(@Value("${security.strength:10}") int strength,
+                          @Value("${security.secretSalt:$2a$10$EzbrJCN8wj8M8B5aQiRmiuWqVvnxna73Ccvm38aoneiJb88kkwlH2}") String secretSalt) {
+        super();
+        this.strength = strength;
+        this.secretSalt = secretSalt;
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    }
 
-	@Bean
-	public PasswordEncoder encoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authenticationProvider());
+    }
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.httpBasic()
-				.and()
-				.authorizeRequests()
-				.antMatchers("/api/welcome")
-				.permitAll()
-				//				even anonymous user is authenthicated
-				//				.authenticated()
-				//				 .hasAnyRole()
-				.antMatchers(HttpMethod.POST, "/api/customizedWelcome")
-				.permitAll()
-				.antMatchers("/api/user/**")
-				.hasAnyRole("ADMIN", "USER")
-				.antMatchers("/api/resource/**")
-				.hasRole("ADMIN")
-				.anyRequest()
-				.authenticated()
-				.and()
-				.formLogin()
-				.permitAll();
-	}
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(securityUserService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        //manually added users with passwords will fail the validation since they can be encrypted only by this method
+        return new BCryptPasswordEncoder(strength, new SecureRandom(secretSalt.getBytes()));
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.httpBasic()
+                .and()
+                //By default is enabled for POST requests
+                .csrf().disable()
+                .authorizeRequests()
+                    .antMatchers("/api/welcome")
+                    .permitAll()
+                //				even anonymous user is authenthicated
+                //				.authenticated()
+                //				 .hasAnyRole()
+                    .antMatchers(HttpMethod.POST, "/api/users")
+                    .permitAll()
+                    .antMatchers(HttpMethod.GET, "/api/users")
+                    .permitAll()
+                    .antMatchers(HttpMethod.POST, "/api/customizedWelcome")
+                    .hasRole("USER")
+                    .antMatchers("/api/users/**")
+                    .hasAnyRole("ADMIN")
+                .and()
+                    .formLogin()
+                    .permitAll();
+    }
 }
