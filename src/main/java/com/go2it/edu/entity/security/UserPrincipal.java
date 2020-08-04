@@ -1,5 +1,6 @@
 package com.go2it.edu.entity.security;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.go2it.edu.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,6 +30,7 @@ public class UserPrincipal implements UserDetails {
                 .collect(Collectors.toList());
     }
 
+    @JsonIgnore
     @Override
     public String getPassword() {
         return user.getPassword();
@@ -49,11 +51,13 @@ public class UserPrincipal implements UserDetails {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return user.isActive();

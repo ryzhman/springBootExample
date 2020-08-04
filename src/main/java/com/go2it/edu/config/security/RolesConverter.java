@@ -1,4 +1,4 @@
-package com.go2it.edu.config;
+package com.go2it.edu.config.security;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

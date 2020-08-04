@@ -1,4 +1,4 @@
-package com.go2it.edu.config;
+package com.go2it.edu.config.security;
 
 import com.go2it.edu.service.SecurityUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,8 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.httpBasic()
-                .and()
+        http
                 //By default is enabled for POST requests
                 .csrf().disable()
                 .authorizeRequests()
@@ -71,13 +71,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers(HttpMethod.POST, "/api/users")
                     .permitAll()
                     .antMatchers(HttpMethod.GET, "/api/users")
-                    .permitAll()
+                    .hasAnyRole("ADMIN")
                     .antMatchers(HttpMethod.POST, "/api/customizedWelcome")
                     .hasRole("USER")
-                    .antMatchers("/api/users/**")
-                    .hasAnyRole("ADMIN")
+                    .antMatchers(HttpMethod.GET, "/api/resource/**")
+                    .hasRole("USER")
                 .and()
                     .formLogin()
-                    .permitAll();
+                    .permitAll()
+                .and()
+                .addFilter(new JWTAuthenticationFilter(authenticationManager(), secretSalt))
+                .addFilter(new JWTAuthorizationFilter(authenticationManager(), secretSalt))
+                // this disables session creation on Spring Security
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);;
     }
 }

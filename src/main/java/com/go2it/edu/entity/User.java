@@ -1,7 +1,7 @@
 package com.go2it.edu.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.go2it.edu.config.RolesConverter;
+import com.go2it.edu.config.security.RolesConverter;
 
 import javax.persistence.*;
 import java.util.List;
